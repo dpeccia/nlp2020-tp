@@ -1,0 +1,18 @@
+import os
+from tika import parser
+
+class ArchivoTxt:
+    def __init__(self, nombre, extension, texto):
+        self.nombre = nombre
+        self.extension = extension
+        self.texto = texto
+
+def convertir_documento_a_txt(archivo):
+    raw = parser.from_file(archivo)
+    return raw['content']
+
+def convertir_archivo_a_txt(archivo):
+    archivo_nombre, archivo_extension = os.path.splitext(archivo)
+    if archivo_extension != ".pptx":
+        archivo_txt = convertir_documento_a_txt(archivo)
+        return ArchivoTxt(archivo_nombre, archivo_extension, archivo_txt)
