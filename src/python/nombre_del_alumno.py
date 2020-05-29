@@ -1,7 +1,9 @@
 import re
+import nltk
 import spacy
 import itertools
 from nltk import line_tokenize
+from nltk import word_tokenize
 from nltk.corpus import stopwords
 
 def obtener_nombre_y_apellido_del_alumno(archivo_test_txt):
@@ -15,17 +17,15 @@ def obtener_nombre_y_apellido_del_alumno(archivo_test_txt):
     entidades_reconocidas_como_personas = [texto for (texto, categoria) in lista_flatenizada if categoria == 'PER']
 
     sw = stopwords.words('spanish')
-    entidades_reconocidas_como_personas = [entidad for entidad in entidades_reconocidas_como_personas if
-                                           not entidad.lower().strip() in sw]
+    entidades_reconocidas_como_personas = [entidad for entidad in entidades_reconocidas_como_personas if not entidad.lower().strip() in sw]
 
     # print([pos_tag(word_tokenize(entidad)) for entidad in entidades_reconocidas_como_personas])
-
+    posibles_nombres_alumno = []
+    # Fijarse cual de las entidades reconocidas como personas esta en un contexto como Nombre:, Integrantes:, etc
     for entidad in entidades_reconocidas_como_personas:
-        if entidad in archivo_test_txt.nombre:
-            nombre_alumno = entidad
+        contextos = nltk.Text(word_tokenize(archivo_test_txt.texto)).concordance_list(entidad.split(' ', 1)[0])
+        for contexto in contextos:
+            if contexto.left_print.lower().__contains__('alumno') or contexto.left_print.lower().__contains__('integrante') or contexto.left_print.lower().__contains__('apellido') or contexto.left_print.lower().__contains__('nombre'):
+                posibles_nombres_alumno += [entidad]
 
-    if (nombre_alumno != ''):
-        return nombre_alumno
-    else:  # Fijarse cual de las entidades reconocidas como personas esta en un contexto como Nombre:, Integrantes:, etc
-        return entidades_reconocidas_como_personas
-        # print([nltk.Text(word_tokenize(archivo_test_txt.texto)).concordance(entidad) for entidad in entidades_reconocidas_como_personas])
+    return posibles_nombres_alumno

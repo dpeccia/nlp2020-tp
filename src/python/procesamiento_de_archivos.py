@@ -7,6 +7,10 @@ class ArchivoTxt:
         self.extension = extension
         self.texto = texto
 
+def obtener_archivos(nombre_directorio):
+    archivos = os.listdir(nombre_directorio)
+    return [convertir_archivo_a_txt(nombre_directorio + archivo) for archivo in archivos]
+
 def convertir_documento_a_txt(archivo):
     raw = parser.from_file(archivo)
     return raw['content']
