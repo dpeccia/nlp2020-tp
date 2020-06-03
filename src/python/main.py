@@ -1,6 +1,19 @@
+from nltk.corpus import stopwords
+
+from src.python.deteccion_de_plagio import obtener_oracion_mas_parecida_del_dataset, limpiar
 from src.python.logging_example import *
 from src.python.procesamiento_de_archivos import obtener_archivos
 from src.python.nombre_del_alumno import obtener_nombre_y_apellido_del_alumno
+from nltk import sent_tokenize, word_tokenize
+import re
+
+def es_titulo(oracion):
+    sw = stopwords.words('spanish')
+    oracion_en_palabras = [palabra for palabra in word_tokenize(oracion) if not palabra in sw]
+    oracion_sin_stopwords = ''
+    for palabra in oracion_en_palabras:
+        oracion_sin_stopwords += " " + palabra
+    return oracion_sin_stopwords.strip().istitle()
 
 def main():
     log.info("Iniciando detector de plagio ...")
@@ -16,12 +29,19 @@ def main():
         nombre_archivo = archivo_test.nombre + archivo_test.extension
         log.info("Analizando plagio en: " + nombre_archivo)
         nombre_alumno = obtener_nombre_y_apellido_del_alumno(archivo_test)
-        log.info("Alumno que realizo el ensayo: " + nombre_alumno[0])
+        if nombre_alumno:
+            log.info("Alumno que realizo el ensayo: " + nombre_alumno[0])
+        else:
+            log.warning("No se encontro el nombre del alumno")
 
         # Obtener Plagio de otros tps
         # falta ver que tp pasó primero, que porcentaje poner como limite, que las consignas no sean plagio
-        # porcentajes_de_aparicion = [obtener_oracion_mas_parecida_del_dataset(oracion, archivo_test, archivos_entrenamiento) for oracion in sent_tokenize(archivo_test.texto.strip())]
-        # plagio_de_otros_tps = [(oracion, posible_plagio, porcentaje, archivo) for (oracion, posible_plagio, porcentaje, archivo) in porcentajes_de_aparicion if porcentaje > 0.7]
+        texto_archivo_test_limpio = limpiar(archivo_test.texto)
+        porcentajes_de_aparicion = [obtener_oracion_mas_parecida_del_dataset(oracion, archivo_test, archivos_entrenamiento) for oracion in texto_archivo_test_limpio]
+        plagio_de_otros_tps = [(oracion, posible_plagio, porcentaje, archivo) for (oracion, posible_plagio, porcentaje, archivo) in porcentajes_de_aparicion if (porcentaje > 0.7) and not es_titulo(oracion)]
+
+        for (a, b, c, d) in plagio_de_otros_tps:
+            print(f"{a} ; {b} ; {c} ; {d}")
 
         # Obtener plagio de paginas de internet
 

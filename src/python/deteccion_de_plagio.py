@@ -1,9 +1,53 @@
 import re
 import requests
+import unicodedata
 from nltk import sent_tokenize
+from nltk import word_tokenize
 from googlesearch import search
 from bs4 import BeautifulSoup
 from src.python.metodos_de_similitud import obtener_similitud
+
+def limpiar(archivo):
+    archivo_limpio = re.sub(r'\n+', '\n', archivo.strip()) # reemplazo multiples enter por uno solo
+    archivo_limpio = re.sub('\n', '. ', archivo_limpio.strip())
+    archivo_limpio = re.sub('á', 'a', archivo_limpio.strip())
+    archivo_limpio = re.sub('é', 'e', archivo_limpio.strip())
+    archivo_limpio = re.sub('í', 'i', archivo_limpio.strip())
+    archivo_limpio = re.sub('ó', 'o', archivo_limpio.strip())
+    archivo_limpio = re.sub('ú', 'u', archivo_limpio.strip())
+    archivo_limpio = re.sub('”', '"', archivo_limpio.strip())
+    archivo_limpio = re.sub('“', '"', archivo_limpio.strip())
+    archivo_limpio = re.sub('\u200b', ' ', archivo_limpio.strip())
+
+    archivo_limpio = unicodedata.normalize("NFKD", archivo_limpio.strip())
+
+    oraciones = sent_tokenize(archivo_limpio.strip(), "spanish")
+    oraciones_limpias = []
+    for oracion in oraciones:
+        if oracion.strip() != '.':
+            if oracion.strip().endswith('.'):
+                oracion_a_agregar = oracion[:-1]
+            else:
+                oracion_a_agregar = oracion
+            oraciones_limpias.append(oracion_a_agregar.strip())
+
+    i=0
+    j=0
+    # TODO: para arreglar enters que deberian ser espacios para que siga la oracion (pasa en pdfs nomas)
+    oraciones_mas_limpias = []
+    while i < len(oraciones_limpias):
+        if i == 0:
+            oraciones_mas_limpias.append(oraciones_limpias[0])
+        else:
+            palabras_oracion = word_tokenize(oraciones_limpias[i])
+            if palabras_oracion[0].islower() or palabras_oracion[0].isnumeric():
+                oraciones_mas_limpias[j] += " " + oraciones_limpias[i]
+            else:
+                j += 1
+                oraciones_mas_limpias.append(oraciones_limpias[i])
+        i += 1
+
+    return oraciones_mas_limpias
 
 def obtener_oracion_mas_parecida_del_dataset(oracion, archivo_test_txt, archivos_entrenamiento_txt):
     mayor_porcentaje = 0.0
@@ -11,15 +55,16 @@ def obtener_oracion_mas_parecida_del_dataset(oracion, archivo_test_txt, archivos
     archivo_donde_se_encontro = ''
     for archivo in archivos_entrenamiento_txt:
         if (archivo != None and obtener_similitud(archivo_test_txt.texto, archivo.texto) < 0.9):
-            for oracion_a_comparar in sent_tokenize(archivo.texto.strip()):
+            for oracion_a_comparar in limpiar(archivo.texto):
                 similitud = obtener_similitud(oracion.lower(), oracion_a_comparar.lower())
-                if (similitud > mayor_porcentaje):
+                if similitud > mayor_porcentaje:
                     mayor_porcentaje = similitud
                     oracion_mas_parecida = oracion_a_comparar
                     archivo_donde_se_encontro = archivo.nombre
 
-    return (re.sub('[^A-Za-z0-9áéíóúñ:/ ]+', ' ', oracion), re.sub('[^A-Za-z0-9áéíóúñ:/ ]+', ' ', oracion_mas_parecida),
-            mayor_porcentaje, archivo_donde_se_encontro)
+    #return re.sub('[^A-Za-z0-9áéíóúñ:/ ]+', ' ', oracion), re.sub('[^A-Za-z0-9áéíóúñ:/ ]+', ' ', oracion_mas_parecida), mayor_porcentaje, archivo_donde_se_encontro
+    return oracion, oracion_mas_parecida, mayor_porcentaje, archivo_donde_se_encontro
+
 
 def obtener_html_como_texto(url):
     try:
