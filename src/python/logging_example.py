@@ -11,3 +11,9 @@ stream.setFormatter(formatter)
 log = logging.getLogger('pythonConfig')
 log.setLevel(LOG_LEVEL)
 log.addHandler(stream)
+
+global porcentajes_de_aparicion_otros_tps
+porcentajes_de_aparicion_otros_tps = []
+
+global porcentajes_de_aparicion_internet
+porcentajes_de_aparicion_internet = []

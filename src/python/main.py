@@ -1,6 +1,10 @@
+import datetime
+import threading
+import time
+
 from nltk.corpus import stopwords
 
-from src.python.deteccion_de_plagio import obtener_oracion_mas_parecida_del_dataset, limpiar
+from src.python.deteccion_de_plagio import obtener_oracion_mas_parecida_del_dataset, limpiar, obtener_oracion_mas_parecida_de_internet
 from src.python.logging_example import *
 from src.python.procesamiento_de_archivos import obtener_archivos
 from src.python.nombre_del_alumno import obtener_nombre_y_apellido_del_alumno
@@ -15,6 +19,51 @@ def es_titulo(oracion):
         oracion_sin_stopwords += " " + palabra
     return oracion_sin_stopwords.strip().istitle()
 
+def obtener_nombre_alumno(archivo):
+    nombre_alumno = obtener_nombre_y_apellido_del_alumno(archivo)
+    if nombre_alumno:
+        log.info("Alumno que realizo el ensayo: " + nombre_alumno[0])
+    else:
+        log.warning("No se encontro el nombre del alumno")
+
+# Obtener Plagio de otros tps
+# falta ver que tp pasó primero, que porcentaje poner como limite, que las consignas no sean plagio
+def obtener_plagio_de_otros_tps(archivo_test, archivos_entrenamiento, texto_archivo_test_limpio):
+    log.info("Obteniendo plagio de otros tps...")
+    hilos_plagio_de_otros_tps = list()
+
+    for oracion in texto_archivo_test_limpio:
+        hilo_plagio_de_otros_tps = threading.Thread(target=obtener_oracion_mas_parecida_del_dataset, args=(oracion, archivo_test, archivos_entrenamiento,))
+        hilos_plagio_de_otros_tps.append(hilo_plagio_de_otros_tps)
+        hilo_plagio_de_otros_tps.start()
+
+    for index, thread in enumerate(hilos_plagio_de_otros_tps):
+        thread.join()
+
+    global plagio_de_otros_tps
+    plagio_de_otros_tps = [(oracion, posible_plagio, porcentaje, archivo) for
+                           (oracion, posible_plagio, porcentaje, archivo) in porcentajes_de_aparicion_otros_tps if
+                           (porcentaje > 0.7) and not es_titulo(oracion)]
+    log.info(f"{len(plagio_de_otros_tps)} plagios de otros tps encontrados")
+
+def obtener_plagio_de_internet(texto_archivo_test_limpio):
+    log.info("Obteniendo plagio de paginas de internet...")
+    hilos_plagio_de_internet = list()
+
+    for oracion in texto_archivo_test_limpio:
+        hilo_plagio_de_internet = threading.Thread(target=obtener_oracion_mas_parecida_de_internet, args=(oracion,))
+        hilos_plagio_de_internet.append(hilo_plagio_de_internet)
+        hilo_plagio_de_internet.start()
+
+    for index, thread in enumerate(hilos_plagio_de_internet):
+        thread.join()
+
+    global plagio_de_internet
+    plagio_de_internet = [(oracion, posible_plagio, porcentaje, archivo) for
+                          (oracion, posible_plagio, porcentaje, archivo) in porcentajes_de_aparicion_internet if
+                          (porcentaje > 0.7) and not es_titulo(oracion)]
+    log.info(f"{len(plagio_de_internet)} plagios de paginas de internet encontrados")
+
 def main():
     log.info("Iniciando detector de plagio ...")
 
@@ -28,25 +77,37 @@ def main():
         archivo_test = archivos_test[0]
         nombre_archivo = archivo_test.nombre + archivo_test.extension
         log.info("Analizando plagio en: " + nombre_archivo)
-        nombre_alumno = obtener_nombre_y_apellido_del_alumno(archivo_test)
-        if nombre_alumno:
-            log.info("Alumno que realizo el ensayo: " + nombre_alumno[0])
-        else:
-            log.warning("No se encontro el nombre del alumno")
-
-        # Obtener Plagio de otros tps
-        # falta ver que tp pasó primero, que porcentaje poner como limite, que las consignas no sean plagio
         texto_archivo_test_limpio = limpiar(archivo_test.texto)
-        porcentajes_de_aparicion = [obtener_oracion_mas_parecida_del_dataset(oracion, archivo_test, archivos_entrenamiento) for oracion in texto_archivo_test_limpio]
-        plagio_de_otros_tps = [(oracion, posible_plagio, porcentaje, archivo) for (oracion, posible_plagio, porcentaje, archivo) in porcentajes_de_aparicion if (porcentaje > 0.7) and not es_titulo(oracion)]
 
-        for (a, b, c, d) in plagio_de_otros_tps:
-            print(f"{a} ; {b} ; {c} ; {d}")
+        tiempo_inicial = time.time()
 
-        # Obtener plagio de paginas de internet
+        threads = list()
 
-        # porcentajes_de_aparicion = [obtener_oracion_mas_parecida_de_internet(oracion) for oracion in sent_tokenize(archivo_test_txt.texto.strip())]
-        # plagio_de_internet = [(oracion,posible_plagio,porcentaje,archivo) for (oracion,posible_plagio,porcentaje,archivo) in porcentajes_de_aparicion if porcentaje>0.7]
+        hilo_nombre_alumno = threading.Thread(target=obtener_nombre_alumno, args=(archivo_test,))
+        threads.append(hilo_nombre_alumno)
+        hilo_nombre_alumno.start()
+
+        hilo_plagio_de_otros_tps = threading.Thread(target=obtener_plagio_de_otros_tps, args=(archivo_test, archivos_entrenamiento, texto_archivo_test_limpio,))
+        threads.append(hilo_plagio_de_otros_tps)
+        hilo_plagio_de_otros_tps.start()
+
+        hilo_plagio_de_internet = threading.Thread(target=obtener_plagio_de_internet, args=(texto_archivo_test_limpio,))
+        threads.append(hilo_plagio_de_internet)
+        hilo_plagio_de_internet.start()
+
+        for index, thread in enumerate(threads):
+            thread.join()
+
+        plagio = plagio_de_otros_tps.copy()
+        for (oracion, posible_plagio, porcentaje, url) in plagio_de_internet:
+            if not any(oracion == otra_oracion for (otra_oracion, _, _, _) in plagio):
+                plagio += [(oracion, posible_plagio, porcentaje, url)]
+
+        tiempo_final = time.time()
+        log.info(f"Total de {len(plagio)} plagios encontrados en {datetime.timedelta(seconds=tiempo_final-tiempo_inicial)} hs")
+        for (a,b,c,d) in plagio:
+            log.info(f"{a} ; {b} ; {c} ; {d}")
+
     else:
         log.error("No se encontro ningun archivo para verificar plagio")
         log.error("Cerrando detector de plagio...")
