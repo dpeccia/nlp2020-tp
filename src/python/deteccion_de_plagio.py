@@ -13,6 +13,8 @@ from src.python.logging_example import porcentajes_de_aparicion_internet, porcen
 def limpiar(archivo):
     archivo_limpio = re.sub(r'\n+', '\n', archivo.strip()) # reemplazo multiples enter por uno solo
     archivo_limpio = re.sub('\n', '. ', archivo_limpio.strip())
+    archivo_limpio = re.sub(r'[.][.]+', '.', archivo_limpio.strip())
+    archivo_limpio = re.sub(r'[ ][ ]+', ' ', archivo_limpio.strip())
     archivo_limpio = re.sub('á', 'a', archivo_limpio.strip())
     archivo_limpio = re.sub('é', 'e', archivo_limpio.strip())
     archivo_limpio = re.sub('í', 'i', archivo_limpio.strip())
@@ -43,7 +45,7 @@ def limpiar(archivo):
             oraciones_mas_limpias.append(oraciones_limpias[0])
         else:
             palabras_oracion = word_tokenize(oraciones_limpias[i])
-            if palabras_oracion[0].islower() or palabras_oracion[0].isnumeric():
+            if palabras_oracion[0].islower():
                 oraciones_mas_limpias[j] += " " + oraciones_limpias[i]
             else:
                 j += 1
@@ -57,15 +59,13 @@ def obtener_oracion_mas_parecida_del_dataset(oracion, archivo_test_txt, archivos
     oracion_mas_parecida = ''
     archivo_donde_se_encontro = ''
     for archivo in archivos_entrenamiento_txt:
-        if (archivo != None and obtener_similitud(archivo_test_txt.texto, archivo.texto) < 0.9):
+        if archivo is not None and obtener_similitud(archivo_test_txt.texto, archivo.texto) < 0.9:
             for oracion_a_comparar in limpiar(archivo.texto):
                 similitud = obtener_similitud(oracion.lower(), oracion_a_comparar.lower())
                 if similitud > mayor_porcentaje:
                     mayor_porcentaje = similitud
                     oracion_mas_parecida = oracion_a_comparar
                     archivo_donde_se_encontro = archivo.nombre
-
-    #return re.sub('[^A-Za-z0-9áéíóúñ:/ ]+', ' ', oracion), re.sub('[^A-Za-z0-9áéíóúñ:/ ]+', ' ', oracion_mas_parecida), mayor_porcentaje, archivo_donde_se_encontro
     porcentajes_de_aparicion_otros_tps.append((oracion, oracion_mas_parecida, mayor_porcentaje, archivo_donde_se_encontro))
 
 def obtener_html_como_texto(url):
@@ -91,15 +91,24 @@ def obtener_oracion_mas_parecida_de_internet(oracion):
     mayor_porcentaje = 0.0
     oracion_mas_parecida = ''
     url_donde_se_encontro = ''
-    for url in search(oracion.lower(), tld="com.ar", num=2, stop=2):
-        print('Buscando: ' + oracion + '\n En URL: ' + url)
-        texto = obtener_html_como_texto(url)
-        if texto != '':
-            for oracion_a_comparar in limpiar(texto):
-                similitud = obtener_similitud(oracion.lower(), oracion_a_comparar.lower())
-                if similitud > mayor_porcentaje:
-                    mayor_porcentaje = similitud
-                    oracion_mas_parecida = oracion_a_comparar
-                    url_donde_se_encontro = url
-
+    for url in search(oracion.lower(), tld="com.ar", num=2, stop=2, pause=2):
+        if str(url).endswith(".pdf") or str(url).endswith(".pdf/"):
+            continue
+        else:
+            print('Buscando: ' + oracion + '\n En URL: ' + url)
+            texto = obtener_html_como_texto(url)
+            if texto != '':
+                for oracion_a_comparar in limpiar(texto):
+                    similitud = obtener_similitud(oracion.lower(), oracion_a_comparar.lower())
+                    if similitud > 0.8:
+                        mayor_porcentaje = similitud
+                        oracion_mas_parecida = oracion_a_comparar
+                        url_donde_se_encontro = url
+                        break
+                    elif similitud > mayor_porcentaje:
+                        mayor_porcentaje = similitud
+                        oracion_mas_parecida = oracion_a_comparar
+                        url_donde_se_encontro = url
+        if mayor_porcentaje > 0.8:
+            break
     porcentajes_de_aparicion_internet.append((oracion, oracion_mas_parecida, mayor_porcentaje, url_donde_se_encontro))

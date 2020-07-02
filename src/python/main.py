@@ -3,13 +3,11 @@ import threading
 import time
 
 from nltk.corpus import stopwords
-
 from src.python.deteccion_de_plagio import obtener_oracion_mas_parecida_del_dataset, limpiar, obtener_oracion_mas_parecida_de_internet
 from src.python.logging_example import *
-from src.python.procesamiento_de_archivos import obtener_archivos
+from src.python.procesamiento_de_archivos import obtener_archivos, guardar_resultado_en_word
 from src.python.nombre_del_alumno import obtener_nombre_y_apellido_del_alumno
 from nltk import sent_tokenize, word_tokenize
-import re
 
 def es_titulo(oracion):
     sw = stopwords.words('spanish')
@@ -20,6 +18,7 @@ def es_titulo(oracion):
     return oracion_sin_stopwords.strip().istitle()
 
 def obtener_nombre_alumno(archivo):
+    global nombre_alumno
     nombre_alumno = obtener_nombre_y_apellido_del_alumno(archivo)
     if nombre_alumno:
         log.info("Alumno que realizo el ensayo: " + nombre_alumno[0])
@@ -104,9 +103,10 @@ def main():
                 plagio += [(oracion, posible_plagio, porcentaje, url)]
 
         tiempo_final = time.time()
-        log.info(f"Total de {len(plagio)} plagios encontrados en {datetime.timedelta(seconds=tiempo_final-tiempo_inicial)} hs")
-        for (a,b,c,d) in plagio:
-            log.info(f"{a} ; {b} ; {c} ; {d}")
+        tiempo_que_tardo = datetime.timedelta(seconds=tiempo_final-tiempo_inicial)
+        log.info(f"Total de {len(plagio)} plagios encontrados en {tiempo_que_tardo} hs")
+
+        guardar_resultado_en_word(nombre_archivo, nombre_alumno, plagio, tiempo_que_tardo)
 
     else:
         log.error("No se encontro ningun archivo para verificar plagio")
