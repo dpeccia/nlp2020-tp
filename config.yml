@@ -1,0 +1,6 @@
+path_archivos_entrenamiento: ../../Entrenamiento/
+path_archivo_test: ../../Test/
+cantidad_de_topicos: 8
+cantidad_de_links: 2
+buscar_en_pdfs: false
+detectar_parafraseos: true

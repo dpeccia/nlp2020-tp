@@ -2,6 +2,7 @@ import math
 import re
 from collections import Counter
 
+
 def obtener_similitud_del_coseno(vector1, vector2):
     interseccion = set(vector1.keys()) & set(vector2.keys())
     numerador = sum([vector1[x] * vector2[x] for x in interseccion])
@@ -15,9 +16,11 @@ def obtener_similitud_del_coseno(vector1, vector2):
     else:
         return float(numerador) / denominador
 
+
 def string_a_vector(texto):
     palabras = re.compile(r'\w+').findall(texto)
     return Counter(palabras)
+
 
 def obtener_similitud(texto1, texto2):
     vector1 = string_a_vector(texto1)
