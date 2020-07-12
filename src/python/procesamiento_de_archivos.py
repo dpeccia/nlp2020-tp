@@ -1,7 +1,9 @@
 import os
 import re
 
+import docx
 import unicodedata
+from docx.enum.dml import MSO_THEME_COLOR_INDEX
 from nltk import word_tokenize, sent_tokenize
 from tika import parser
 from docx import Document
@@ -93,10 +95,12 @@ def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagi
     document.add_paragraph(f'Porcentaje de plagio: {porcentaje_de_plagio}%')
 
     table = document.add_table(rows=1, cols=3)
+    table.style = 'Colorful Grid Accent 1' # Nombres de estilos de tablas en word
     hdr_cells = table.rows[0].cells
     hdr_cells[0].text = 'Oración plagiada'
     hdr_cells[1].text = 'Oración original'
     hdr_cells[2].text = 'Lugar donde se encontró'
+
     for oracion, plagio, porcentaje, url in plagio:
         row_cells = table.add_row().cells
         row_cells[0].text = oracion

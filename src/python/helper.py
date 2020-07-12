@@ -1,4 +1,6 @@
 import logging
+from threading import Lock
+
 from colorlog import ColoredFormatter
 from nltk import word_tokenize, re
 from nltk.corpus import stopwords
@@ -37,6 +39,9 @@ plagio_de_internet = []
 
 global textos_preparados_entrenamiento
 textos_preparados_entrenamiento = []
+
+global mutex
+mutex = Lock()
 
 def preparar_oracion(oracion, sw):
     if str(oracion).endswith('?'):

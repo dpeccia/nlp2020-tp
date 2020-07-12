@@ -1,3 +1,5 @@
+import time
+
 import requests
 from googlesearch import search
 from bs4 import BeautifulSoup
@@ -5,7 +7,7 @@ from nltk.corpus import stopwords
 
 from src.python.metodos_de_similitud import obtener_similitud
 from src.python.helper import porcentajes_de_aparicion_internet, porcentajes_de_aparicion_otros_tps, preparar_oracion, \
-    log, archivos_entrenamiento_limpios
+    log, archivos_entrenamiento_limpios, mutex
 from src.python.procesamiento_de_archivos import limpiar
 
 
@@ -52,7 +54,12 @@ def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw):
     oracion_mas_parecida = ''
     url_donde_se_encontro = ''
 
-    for url in search(oracion_preparada, tld="com.ar", num=2, stop=2, pause=2):
+    mutex.acquire()
+    urls = search(oracion_preparada, tld="com.ar", num=2, stop=2, pause=2)
+    time.sleep(0.002)
+    mutex.release()
+
+    for url in urls:
         if str(url).endswith(".pdf") or str(url).endswith(".pdf/"):
             continue
         else:
