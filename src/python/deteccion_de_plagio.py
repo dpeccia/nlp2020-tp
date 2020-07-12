@@ -15,6 +15,7 @@ def obtener_oracion_mas_parecida_del_dataset(oracion, oracion_preparada, archivo
     mayor_porcentaje = 0.0
     oracion_mas_parecida = ''
     archivo_donde_se_encontro = ''
+    ubicacion_donde_se_encontro = ''
 
     for archivo in archivos_entrenamiento:
         if archivo is not None:
@@ -27,8 +28,9 @@ def obtener_oracion_mas_parecida_del_dataset(oracion, oracion_preparada, archivo
                     if similitud > mayor_porcentaje:
                         mayor_porcentaje = similitud
                         oracion_mas_parecida = oracion_a_comparar
-                        archivo_donde_se_encontro = archivo.nombre
-    porcentajes_de_aparicion_otros_tps.append((oracion, oracion_mas_parecida, mayor_porcentaje, archivo_donde_se_encontro))
+                        archivo_donde_se_encontro = archivo.nombre + archivo.extension
+                        ubicacion_donde_se_encontro = int(archivo.texto.index(oracion_a_comparar)) + 1
+    porcentajes_de_aparicion_otros_tps.append((oracion, oracion_mas_parecida, mayor_porcentaje, archivo_donde_se_encontro, ubicacion_donde_se_encontro))
 
 def obtener_html_como_texto(url):
     try:
@@ -49,24 +51,26 @@ def obtener_html_como_texto(url):
     text = '\n'.join(chunk for chunk in chunks if chunk)
     return text
 
-def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw):
+def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw, cantidad_de_links, buscar_en_pdfs):
     mayor_porcentaje = 0.0
     oracion_mas_parecida = ''
     url_donde_se_encontro = ''
+    ubicacion_donde_se_encontro = ''
 
     mutex.acquire()
-    urls = search(oracion_preparada, tld="com.ar", num=2, stop=2, pause=2)
+    urls = search(oracion_preparada, tld="com.ar", num=cantidad_de_links, stop=cantidad_de_links, pause=2)
     time.sleep(0.002)
     mutex.release()
 
     for url in urls:
-        if str(url).endswith(".pdf") or str(url).endswith(".pdf/"):
+        if (not buscar_en_pdfs) and (url).endswith(".pdf") or str(url).endswith(".pdf/"):
             continue
         else:
             #log.debug('PLAGIO_DE_INTERNET | Buscando: ' + oracion + '\n En URL: ' + url)
             texto = obtener_html_como_texto(url)
             if texto != '':
-                for oracion_a_comparar in limpiar(texto):
+                archivo = limpiar(texto)
+                for oracion_a_comparar in archivo:
                     oracion_a_comparar_preparada = preparar_oracion(oracion_a_comparar, sw)
                     if oracion_a_comparar_preparada is None:
                         continue
@@ -75,11 +79,13 @@ def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw):
                         mayor_porcentaje = similitud
                         oracion_mas_parecida = oracion_a_comparar
                         url_donde_se_encontro = url
+                        ubicacion_donde_se_encontro = int(archivo.index(oracion_a_comparar)) + 1
                         break
                     elif similitud > mayor_porcentaje:
                         mayor_porcentaje = similitud
                         oracion_mas_parecida = oracion_a_comparar
                         url_donde_se_encontro = url
+                        ubicacion_donde_se_encontro = int(archivo.index(oracion_a_comparar)) + 1
         if mayor_porcentaje > 0.8:
             break
-    porcentajes_de_aparicion_internet.append((oracion, oracion_mas_parecida, mayor_porcentaje, url_donde_se_encontro))
+    porcentajes_de_aparicion_internet.append((oracion, oracion_mas_parecida, mayor_porcentaje, url_donde_se_encontro, ubicacion_donde_se_encontro))

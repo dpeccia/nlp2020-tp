@@ -9,6 +9,7 @@ from tika import parser
 from docx import Document
 
 from src.python.helper import archivos_entrenamiento_limpios
+from src.python.metodos_de_similitud import obtener_similitud
 
 
 class ArchivoTxt:
@@ -79,7 +80,26 @@ def limpiar_archivos_entrenamiento(archivo):
     archivo_limpio = limpiar(archivo.texto)
     archivos_entrenamiento_limpios.append(ArchivoTxt(archivo.nombre, archivo.extension, archivo_limpio))
 
-def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagio, tiempo_que_tardo, porcentaje_de_plagio):
+def correctamente_citada(url, texto_archivo_test_limpio):
+    for oracion in texto_archivo_test_limpio:
+        similitud = obtener_similitud(oracion, url)
+        if similitud >= 0.99:
+            return True
+    return False
+
+
+def excluida(oracion):
+    archivo_text_excluido = convertir_archivo_a_txt("../../", "Texto excluido de plagio.txt")
+    if archivo_text_excluido.texto is None:
+        return False
+    archivo_limpio = limpiar(archivo_text_excluido.texto)
+    for oracion_archivo in archivo_limpio:
+        similitud = obtener_similitud(oracion, oracion_archivo)
+        if similitud > 0.9:
+            return True
+    return False
+
+def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagio, tiempo_que_tardo, porcentaje_de_plagio, path_resultado):
     document = Document()
 
     document.add_heading(f'Análisis de plagio sobre: {nombre_archivo}', 0)
@@ -87,8 +107,9 @@ def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagi
     p = document.add_paragraph('Tópicos del texto: ')
     p.add_run(" ".join(topico_con_mas_score)).italic = True
 
-    p = document.add_paragraph('Nombre del alumno que realizo el TP: ')
-    p.add_run(nombre_alumno[0]).italic = True
+    if nombre_alumno:
+        p = document.add_paragraph('Nombre del alumno que realizo el TP: ')
+        p.add_run(nombre_alumno[0]).italic = True
 
     document.add_heading('Análisis de plagio', level=1)
     document.add_paragraph(f'Total de {len(plagio)} encontrados en {tiempo_que_tardo}')
@@ -101,7 +122,7 @@ def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagi
     hdr_cells[1].text = 'Oración original'
     hdr_cells[2].text = 'Lugar donde se encontró'
 
-    for oracion, plagio, porcentaje, url in plagio:
+    for oracion, plagio, porcentaje, url, ubicacion in plagio:
         row_cells = table.add_row().cells
         row_cells[0].text = oracion
         row_cells[1].text = plagio
@@ -109,6 +130,6 @@ def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagi
 
     document.add_page_break()
 
-    nombre_archivo_plagio = '../../Resultado/Plagio ' + str(str(nombre_archivo).split(".")[0]) + '.docx'
+    nombre_archivo_plagio = path_resultado + 'Plagio ' + str(str(nombre_archivo).split(".")[0]) + '.docx'
 
     document.save(nombre_archivo_plagio)
