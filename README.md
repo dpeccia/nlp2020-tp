@@ -8,7 +8,7 @@ Esta detección no se limita a los trabajos prácticos de otros años, presentad
 
 Además de detectar el plagio, se indica claramente, en qué líneas o palabras (ubicación relativa) se encontró, a quien o quienes se está plagiando y se da la posibilidad de ver o revisar ambos textos (pudiendo ser referencias a links, trabajos de otros alumnos, libros, etc)
 
-Código realizado en Python3. Documento que acompaña al código: _TP Plagio - Diego Peccia.pdf_
+Código realizado en Python3. Documento que acompaña al código: [TP Plagio - Diego Peccia.pdf](URL "https://github.com/dpeccia/nlp2020-tp/blob/master/TP%20Plagio%20-%20Diego%20Peccia.pdf")
 
 ## Como ejecutarlo
 
