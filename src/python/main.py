@@ -1,4 +1,5 @@
 import datetime
+import os
 import threading
 import time
 import yaml
@@ -52,7 +53,7 @@ def main():
 
         for index, thread in enumerate(hilos_limpieza_archivos):
             thread.join()
-
+        
         hilo_tema = threading.Thread(target=obtener_tema_del_texto,
                                      args=(texto_archivo_test_limpio, sw, int(config["cantidad_de_topicos"]),))
         hilos_principales.append(hilo_tema)
@@ -79,10 +80,10 @@ def main():
         log.info(f"Total de {len(plagio)} plagios encontrados en {tiempo_que_tardo} hs")
 
         porcentaje_de_plagio = int((len(plagio) * 100) / len(texto_archivo_test_limpio))
-        guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagio, tiempo_que_tardo, porcentaje_de_plagio, config["path_resultado"])
+        guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagio, tiempo_que_tardo, porcentaje_de_plagio, config["path_resultado"], config["path_archivos_entrenamiento"])
         log.info("El detector de plagio finalizo correctamente!")
         log.info(f"Porcentaje de plagio: {porcentaje_de_plagio} %")
-        log.info(f'Resultado guardado en: {config["path_resultado"]}Plagio {str(str(nombre_archivo).split(".")[0])}.pdf')
+        log.info(f'Resultado guardado en: {os.path.abspath(config["path_resultado"])}\\Plagio {str(str(nombre_archivo).split(".")[0])}.docx')
     else:
         log.error("No se encontro ningun archivo para verificar plagio")
         log.error("Cerrando detector de plagio...")
