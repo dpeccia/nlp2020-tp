@@ -29,9 +29,8 @@ def convertir_documento_a_txt(archivo, nombre_directorio):
 
 def convertir_archivo_a_txt(nombre_directorio, archivo):
     archivo_nombre, archivo_extension = os.path.splitext(archivo)
-    if archivo_extension != ".pptx":
-        archivo_txt = convertir_documento_a_txt(archivo, nombre_directorio)
-        return ArchivoTxt(archivo_nombre, archivo_extension, archivo_txt)
+    archivo_txt = convertir_documento_a_txt(archivo, nombre_directorio)
+    return ArchivoTxt(archivo_nombre, archivo_extension, archivo_txt)
 
 def limpiar(archivo):
     archivo_limpio = re.sub(r'\n+', '\n', archivo.strip()) # reemplazo multiples enter por uno solo

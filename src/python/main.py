@@ -27,7 +27,6 @@ def main():
         nombre_archivo = archivo_test.nombre + archivo_test.extension
         log.info("Analizando plagio en: " + nombre_archivo)
         texto_archivo_test_limpio = limpiar(archivo_test.texto)
-
         texto_archivo_test_sin_oraciones_excluidas = [oracion for oracion in texto_archivo_test_limpio if not excluida(oracion)]
 
         sw = stopwords.words('spanish')
