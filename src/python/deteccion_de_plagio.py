@@ -1,8 +1,10 @@
+import itertools
 import time
 
 import requests
 from googlesearch import search
 from bs4 import BeautifulSoup
+from nltk import word_tokenize
 from nltk.corpus import stopwords
 
 from src.python.metodos_de_similitud import obtener_similitud
@@ -15,7 +17,8 @@ def obtener_oracion_mas_parecida_del_dataset(oracion, oracion_preparada, archivo
     mayor_porcentaje = 0.0
     oracion_mas_parecida = ''
     archivo_donde_se_encontro = ''
-    ubicacion_donde_se_encontro = ''
+    archivo_donde_se_encontro_txt = ''
+    ubicacion_dentro_de_la_lista = 0
 
     for archivo in archivos_entrenamiento:
         if archivo is not None:
@@ -29,7 +32,11 @@ def obtener_oracion_mas_parecida_del_dataset(oracion, oracion_preparada, archivo
                         mayor_porcentaje = similitud
                         oracion_mas_parecida = oracion_a_comparar
                         archivo_donde_se_encontro = archivo.nombre + archivo.extension
-                        ubicacion_donde_se_encontro = int(archivo.texto.index(oracion_a_comparar)) + 1
+                        ubicacion_dentro_de_la_lista = int(archivo.texto.index(oracion_a_comparar))
+                        archivo_donde_se_encontro_txt = archivo.texto
+    ubicacion_principio = sum(map(len, map(word_tokenize, archivo_donde_se_encontro_txt[:ubicacion_dentro_de_la_lista])))
+    ubicacion_fin = ubicacion_principio + len(word_tokenize(oracion_mas_parecida))
+    ubicacion_donde_se_encontro = f"({ubicacion_principio}, {ubicacion_fin})"
     porcentajes_de_aparicion_otros_tps.append((oracion, oracion_mas_parecida, mayor_porcentaje, archivo_donde_se_encontro, ubicacion_donde_se_encontro))
 
 def obtener_html_como_texto(url):
@@ -55,7 +62,8 @@ def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw, can
     mayor_porcentaje = 0.0
     oracion_mas_parecida = ''
     url_donde_se_encontro = ''
-    ubicacion_donde_se_encontro = ''
+    archivo_donde_se_encontro = ''
+    ubicacion_dentro_de_la_lista = 0
 
     mutex.acquire()
     urls = search(oracion_preparada, tld="com.ar", num=cantidad_de_links, stop=cantidad_de_links, pause=2)
@@ -79,13 +87,18 @@ def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw, can
                         mayor_porcentaje = similitud
                         oracion_mas_parecida = oracion_a_comparar
                         url_donde_se_encontro = url
-                        ubicacion_donde_se_encontro = int(archivo.index(oracion_a_comparar)) + 1
+                        archivo_donde_se_encontro = archivo
+                        ubicacion_dentro_de_la_lista = int(archivo.index(oracion_a_comparar))
                         break
                     elif similitud > mayor_porcentaje:
                         mayor_porcentaje = similitud
                         oracion_mas_parecida = oracion_a_comparar
                         url_donde_se_encontro = url
-                        ubicacion_donde_se_encontro = int(archivo.index(oracion_a_comparar)) + 1
+                        archivo_donde_se_encontro = archivo
+                        ubicacion_dentro_de_la_lista = int(archivo.index(oracion_a_comparar))
         if mayor_porcentaje > 0.8:
             break
+    ubicacion_principio = sum(map(len, map(word_tokenize, archivo_donde_se_encontro[:ubicacion_dentro_de_la_lista])))
+    ubicacion_fin = ubicacion_principio + len(word_tokenize(oracion_mas_parecida))
+    ubicacion_donde_se_encontro = f"({ubicacion_principio}, {ubicacion_fin})"
     porcentajes_de_aparicion_internet.append((oracion, oracion_mas_parecida, mayor_porcentaje, url_donde_se_encontro, ubicacion_donde_se_encontro))

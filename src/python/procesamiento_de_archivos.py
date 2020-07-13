@@ -115,18 +115,20 @@ def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagi
     document.add_paragraph(f'Total de {len(plagio)} encontrados en {tiempo_que_tardo}')
     document.add_paragraph(f'Porcentaje de plagio: {porcentaje_de_plagio}%')
 
-    table = document.add_table(rows=1, cols=3)
-    table.style = 'Colorful Grid Accent 1' # Nombres de estilos de tablas en word
+    table = document.add_table(rows=1, cols=4)
+    table.style = 'Colorful List Accent 2' # Nombres de estilos de tablas en word
     hdr_cells = table.rows[0].cells
     hdr_cells[0].text = 'Oración plagiada'
     hdr_cells[1].text = 'Oración original'
     hdr_cells[2].text = 'Lugar donde se encontró'
+    hdr_cells[3].text = 'Ubicación'
 
     for oracion, plagio, porcentaje, url, ubicacion in plagio:
         row_cells = table.add_row().cells
         row_cells[0].text = oracion
         row_cells[1].text = plagio
         row_cells[2].text = url
+        row_cells[3].text = ubicacion
 
     document.add_page_break()
 
