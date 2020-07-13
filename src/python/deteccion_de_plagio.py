@@ -58,12 +58,11 @@ def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw, can
     ubicacion_dentro_de_la_lista = 0
 
     mutex.acquire()
-    urls = search(oracion_preparada, tld="com.ar", num=cantidad_de_links, stop=cantidad_de_links, pause=2)
-    time.sleep(0.002)
-    mutex.release()
-
-    for url in urls:
-        if (not buscar_en_pdfs) and (url).endswith(".pdf") or str(url).endswith(".pdf/"):
+    for url in search(oracion_preparada, tld="com.ar", num=cantidad_de_links, stop=cantidad_de_links, pause=2):
+        time.sleep(0.002)
+        mutex.release()
+        if (not buscar_en_pdfs) and url.endswith(".pdf") or str(url).endswith(".pdf/"):
+            mutex.acquire()
             continue
         else:
             texto = obtener_html_como_texto(url)
@@ -89,6 +88,9 @@ def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw, can
                         ubicacion_dentro_de_la_lista = int(archivo.index(oracion_a_comparar))
         if mayor_porcentaje > 0.8:
             break
+        mutex.acquire()
+    time.sleep(0.002)
+    mutex.release()
     ubicacion_principio = sum(map(len, map(word_tokenize, archivo_donde_se_encontro[:ubicacion_dentro_de_la_lista])))
     ubicacion_fin = ubicacion_principio + len(word_tokenize(oracion_mas_parecida))
     ubicacion_donde_se_encontro = f"({ubicacion_principio}, {ubicacion_fin})"
