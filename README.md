@@ -8,7 +8,7 @@ Esta detección no se limita a los trabajos prácticos de otros años, presentad
 
 Además de detectar el plagio, se indica claramente, en qué líneas o palabras (ubicación relativa) se encontró, a quien o quienes se está plagiando y se da la posibilidad de ver o revisar ambos textos (pudiendo ser referencias a links, trabajos de otros alumnos, libros, etc)
 
-Código realizado en Python3. Documento que acompaña al código: [TP Plagio - Diego Peccia.pdf](URL "https://github.com/dpeccia/nlp2020-tp/blob/master/TP%20Plagio%20-%20Diego%20Peccia.pdf")
+Código realizado en Python3. Documento que acompaña al código: [TP Plagio - Diego Peccia.pdf](/TP%20Plagio%20-%20Diego%20Peccia.pdf)
 
 ## Como ejecutarlo
 
@@ -47,4 +47,4 @@ El resultado se guardará en un archivo en la ubicación que seteamos en el _pat
 * Porcentaje de plagio del texto en general
 * Listado de frases (y su ubicación dentro del texto) que podrían ser plagios de otros TPs previamente subidos o bien copiados de internet en una tabla con las siguientes columnas: Oración plagiada (oración del archivo de texto procesado), oración original (oración del lugar donde se plagió), lugar donde se encontró (con un hipervínculo al archivo o página de internet donde se encontró), ubicación dentro del archivo en el que se encontró
 
-Ejemplo de resultado del detector de plagio: [/Resultado/Plagio Trabajo Práctico de Ejemplo.pdf](URL "https://github.com/dpeccia/nlp2020-tp/blob/master/Resultado/Plagio%20Trabajo%20Pr%C3%A1ctico%20de%20Ejemplo.pdf")
+Ejemplo de resultado del detector de plagio: [/Resultado/Plagio Trabajo Práctico de Ejemplo.pdf](/Resultado/Plagio%20Trabajo%20Pr%C3%A1ctico%20de%20Ejemplo.pdf)
