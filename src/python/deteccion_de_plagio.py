@@ -44,7 +44,7 @@ def obtener_html_como_texto(url):
         html = requests.get(url).text
     except requests.exceptions.ConnectionError:
         return ''
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, features='lxml')
     # kill all script and style elements
     for script in soup(["script", "style"]):
         script.extract()  # rip it out

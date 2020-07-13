@@ -53,7 +53,7 @@ def main():
 
         for index, thread in enumerate(hilos_limpieza_archivos):
             thread.join()
-        
+
         hilo_tema = threading.Thread(target=obtener_tema_del_texto,
                                      args=(texto_archivo_test_limpio, sw, int(config["cantidad_de_topicos"]),))
         hilos_principales.append(hilo_tema)
