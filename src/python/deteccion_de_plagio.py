@@ -3,9 +3,9 @@ import requests
 from googlesearch import search
 from bs4 import BeautifulSoup
 from nltk import word_tokenize
-from src.python.metodos_de_similitud import obtener_similitud
-from src.python.helper import porcentajes_de_aparicion_internet, porcentajes_de_aparicion_otros_tps, preparar_oracion, mutex
-from src.python.procesamiento_de_archivos import limpiar
+from metodos_de_similitud import obtener_similitud
+from helper import porcentajes_de_aparicion_internet, porcentajes_de_aparicion_otros_tps, preparar_oracion, mutex
+from procesamiento_de_archivos import limpiar
 
 
 def obtener_oracion_mas_parecida_del_dataset(oracion, oracion_preparada, archivo_test_txt, archivos_entrenamiento, sw):

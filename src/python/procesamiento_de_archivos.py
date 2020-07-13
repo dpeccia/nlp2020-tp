@@ -7,8 +7,8 @@ from docx.shared import Cm
 from nltk import word_tokenize, sent_tokenize
 from tika import parser
 from docx import Document
-from src.python.helper import archivos_entrenamiento_limpios
-from src.python.metodos_de_similitud import obtener_similitud
+from helper import archivos_entrenamiento_limpios
+from metodos_de_similitud import obtener_similitud
 
 
 class ArchivoTxt:

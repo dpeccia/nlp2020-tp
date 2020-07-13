@@ -2,7 +2,7 @@ import threading
 import gensim
 from gensim.models import LdaModel
 import spacy
-from src.python.helper import log, topico_con_mas_score, textos_preparados_entrenamiento, archivos_entrenamiento_limpios
+from helper import log, topico_con_mas_score, textos_preparados_entrenamiento, archivos_entrenamiento_limpios
 from gensim import corpora
 
 

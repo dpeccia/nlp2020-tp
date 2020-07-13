@@ -1,14 +1,15 @@
 import datetime
 import os
+import sys
 import threading
 import time
 import yaml
 from nltk.corpus import stopwords
-from src.python.funciones_principales import obtener_nombre_alumno, obtener_plagio_de_otros_tps, obtener_plagio_de_internet
-from src.python.helper import *
-from src.python.procesamiento_de_archivos import obtener_archivos, guardar_resultado, limpiar, \
+from funciones_principales import obtener_nombre_alumno, obtener_plagio_de_otros_tps, obtener_plagio_de_internet
+from helper import *
+from procesamiento_de_archivos import obtener_archivos, guardar_resultado, limpiar, \
     limpiar_archivos_entrenamiento, excluida, correctamente_citada
-from src.python.tema_del_texto import obtener_tema_del_texto
+from tema_del_texto import obtener_tema_del_texto
 
 
 def main():

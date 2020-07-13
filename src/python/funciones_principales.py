@@ -1,9 +1,9 @@
 import threading
-from src.python.deteccion_de_plagio import obtener_oracion_mas_parecida_del_dataset, \
+from deteccion_de_plagio import obtener_oracion_mas_parecida_del_dataset, \
     obtener_oracion_mas_parecida_de_internet
-from src.python.helper import nombre_alumno, log, plagio_de_otros_tps, porcentajes_de_aparicion_otros_tps, \
+from helper import nombre_alumno, log, plagio_de_otros_tps, porcentajes_de_aparicion_otros_tps, \
     plagio_de_internet, porcentajes_de_aparicion_internet, preparar_oracion, archivos_entrenamiento_limpios
-from src.python.nombre_del_alumno import obtener_nombre_y_apellido_del_alumno
+from nombre_del_alumno import obtener_nombre_y_apellido_del_alumno
 
 
 def obtener_nombre_alumno(archivo, sw):
