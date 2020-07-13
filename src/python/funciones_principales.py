@@ -1,6 +1,4 @@
 import threading
-
-from nltk.corpus import stopwords
 from src.python.deteccion_de_plagio import obtener_oracion_mas_parecida_del_dataset, \
     obtener_oracion_mas_parecida_de_internet
 from src.python.helper import nombre_alumno, log, plagio_de_otros_tps, porcentajes_de_aparicion_otros_tps, \
@@ -16,8 +14,7 @@ def obtener_nombre_alumno(archivo, sw):
     else:
         log.warning("NOMBRE_ALUMNO | No se encontro el nombre del alumno")
 
-# Obtener Plagio de otros tps
-# falta ver que tp pasó primero, que porcentaje poner como limite, que las consignas no sean plagio
+
 def obtener_plagio_de_otros_tps(texto_archivo_test_limpio, sw):
     log.info("PLAGIO_DE_TPS | Obteniendo plagio de otros tps...")
     hilos_plagio_de_otros_tps = list()

@@ -3,6 +3,7 @@ import os
 import threading
 import time
 import yaml
+from nltk.corpus import stopwords
 from src.python.funciones_principales import obtener_nombre_alumno, obtener_plagio_de_otros_tps, obtener_plagio_de_internet
 from src.python.helper import *
 from src.python.procesamiento_de_archivos import obtener_archivos, guardar_resultado, limpiar, \
@@ -52,12 +53,12 @@ def main():
 
         for index, thread in enumerate(hilos_limpieza_archivos):
             thread.join()
-        '''
+
         hilo_tema = threading.Thread(target=obtener_tema_del_texto,
                                      args=(texto_archivo_test_limpio, sw, int(config["cantidad_de_topicos"]),))
         hilos_principales.append(hilo_tema)
         hilo_tema.start()
-'''
+
         hilo_plagio_de_otros_tps = threading.Thread(target=obtener_plagio_de_otros_tps,
                                                     args=(texto_archivo_test_sin_oraciones_excluidas, sw, ))
         hilos_principales.append(hilo_plagio_de_otros_tps)

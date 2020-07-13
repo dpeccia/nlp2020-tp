@@ -1,9 +1,7 @@
 import logging
 from threading import Lock
-
 from colorlog import ColoredFormatter
 from nltk import word_tokenize, re
-from nltk.corpus import stopwords
 
 LOG_LEVEL = logging.DEBUG
 LOGFORMAT = "  %(log_color)s%(asctime)-8s%(reset)s %(log_color)s| %(log_color)s%(levelname)s%(reset)s %(log_color)s| %(log_color)s%(message)s%(reset)s"

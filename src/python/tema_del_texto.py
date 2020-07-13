@@ -1,10 +1,7 @@
 import threading
-
 import gensim
 from gensim.models import LdaModel
-from nltk.corpus import stopwords
 import spacy
-from src.python.deteccion_de_plagio import limpiar
 from src.python.helper import log, topico_con_mas_score, textos_preparados_entrenamiento, archivos_entrenamiento_limpios
 from gensim import corpora
 
@@ -22,9 +19,11 @@ def obtener_sustantivos_lematizados(nlp, texts):
     texts_out = [token.lemma_ for token in nlp(texts.lower()) if token.pos_ in ['NOUN'] and len(token.text) > 2]
     return texts_out
 
+
 def preparar_archivo_entrenamiento_para_lda(archivo, nlp, sw):
     archivo_preparado = preparar_texto_para_lda(archivo, nlp, sw)
     textos_preparados_entrenamiento.append(archivo_preparado)
+
 
 def obtener_tema_del_texto(archivo_test, sw, cantidad_de_topicos):
     log.info("TOPICOS | Obteniendo topicos del texto ...")
