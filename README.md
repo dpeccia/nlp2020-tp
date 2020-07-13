@@ -22,7 +22,7 @@ Seteamos configuracion en **_config.yml_**:
 * _path_archivos_entrenamiento_: ubicación de los archivos o trabajos prácticos anteriores (dataset) donde se desee consultar el plagio
 * _path_archivo_test_: ubicación del archivo del que querremos detectar el plagio
 * _path_resultado_: ubicación donde querremos almacenar el archivo resultado del algoritmo de detección de plagio
-* cantidad_de_topicos_: cantidad de palabras clave, tema, o tópicos del texto de test que querremos que el algoritmo nos diga para luego poder identificar el tema más fácilmente
+* _cantidad_de_topicos_: cantidad de palabras clave, tema, o tópicos del texto de test que querremos que el algoritmo nos diga para luego poder identificar el tema más fácilmente
 * _cantidad_de_links_: cantidad de links de google donde querremos que el detector busque si hay plagio (por oración)
 * _buscar_en_pdfs_: True o False. Si queremos que, en caso de que uno de los links donde se busca plagio sea un pdf que haya que descargar, se busque plagio ahí también o no
 
