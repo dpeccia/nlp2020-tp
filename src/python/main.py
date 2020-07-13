@@ -53,12 +53,12 @@ def main():
 
         for index, thread in enumerate(hilos_limpieza_archivos):
             thread.join()
-
+        '''
         hilo_tema = threading.Thread(target=obtener_tema_del_texto,
                                      args=(texto_archivo_test_limpio, sw, int(config["cantidad_de_topicos"]),))
         hilos_principales.append(hilo_tema)
         hilo_tema.start()
-
+'''
         hilo_plagio_de_otros_tps = threading.Thread(target=obtener_plagio_de_otros_tps,
                                                     args=(texto_archivo_test_sin_oraciones_excluidas, sw, ))
         hilos_principales.append(hilo_plagio_de_otros_tps)
@@ -76,8 +76,12 @@ def main():
                     plagio += [(oracion, posible_plagio, porcentaje, url, ubicacion)]
 
         tiempo_final = time.time()
-        tiempo_que_tardo = datetime.timedelta(seconds=tiempo_final-tiempo_inicial)
-        log.info(f"Total de {len(plagio)} plagios encontrados en {tiempo_que_tardo} hs")
+        tiempo_que_tardo_str = str(datetime.timedelta(seconds=tiempo_final-tiempo_inicial)).split(":")
+        if tiempo_que_tardo_str[1] == "00":
+            tiempo_que_tardo = f"{tiempo_que_tardo_str[2].split('.')[0]} segundos"
+        else:
+            tiempo_que_tardo = f"{tiempo_que_tardo_str[1]} minutos, {tiempo_que_tardo_str[2].split('.')[0]} segundos"
+        log.info(f"Total de {len(plagio)} plagios encontrados en {tiempo_que_tardo}")
 
         porcentaje_de_plagio = int((len(plagio) * 100) / len(texto_archivo_test_limpio))
         guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagio, tiempo_que_tardo, porcentaje_de_plagio, config["path_resultado"], config["path_archivos_entrenamiento"])

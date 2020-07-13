@@ -4,6 +4,7 @@ import re
 import docx
 import unicodedata
 from docx.enum.dml import MSO_THEME_COLOR_INDEX
+from docx.shared import Cm
 from nltk import word_tokenize, sent_tokenize
 from tika import parser
 from docx import Document
@@ -131,21 +132,23 @@ def add_hyperlink(paragraph, text, url):
 def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagio, tiempo_que_tardo, porcentaje_de_plagio, path_resultado, path_entrenamiento):
     document = Document()
 
-    document.add_heading(f'Análisis de plagio sobre: {nombre_archivo}', 0)
+    h = document.add_heading(f'Análisis de plagio sobre:\n', 0)
+    h.add_run(nombre_archivo).italic = True
 
     p = document.add_paragraph('Tópicos del texto: ')
-    p.add_run(", ".join(topico_con_mas_score)).italic = True
+    p.add_run(", ".join(["a","b"])).italic = True
 
     if nombre_alumno:
-        p = document.add_paragraph('Nombre del alumno que realizo el TP: ')
+        p = document.add_paragraph('Nombre del alumno que realizó el TP: ')
         p.add_run(nombre_alumno[0]).italic = True
 
     document.add_heading('Análisis de plagio', level=1)
-    document.add_paragraph(f'Total de {len(plagio)} encontrados en {tiempo_que_tardo}')
-    document.add_paragraph(f'Porcentaje de plagio: {porcentaje_de_plagio}%')
+    document.add_paragraph(f'Total de {len(plagio)} plagios encontrados en {tiempo_que_tardo}')
+    document.add_paragraph(f'Porcentaje de plagio general: {porcentaje_de_plagio}%')
 
     table = document.add_table(rows=1, cols=4)
-    table.style = 'Colorful List Accent 1' # Nombres de estilos de tablas en word
+    table.allow_autofit = False
+    table.style = 'Medium Shading 1 Accent 1' # Nombres de estilos de tablas en word
     hdr_cells = table.rows[0].cells
     hdr_cells[0].text = 'Oración plagiada'
     hdr_cells[1].text = 'Oración original'
@@ -164,5 +167,4 @@ def guardar_resultado(nombre_archivo, nombre_alumno, topico_con_mas_score, plagi
         row_cells[3].text = ubicacion
 
     nombre_archivo_plagio = path_resultado + 'Plagio ' + str(str(nombre_archivo).split(".")[0]) + '.docx'
-
     document.save(nombre_archivo_plagio)
