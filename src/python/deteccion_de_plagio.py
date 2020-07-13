@@ -87,6 +87,7 @@ def obtener_oracion_mas_parecida_de_internet(oracion, oracion_preparada, sw, can
                         archivo_donde_se_encontro = archivo
                         ubicacion_dentro_de_la_lista = int(archivo.index(oracion_a_comparar))
         if mayor_porcentaje > 0.8:
+            mutex.acquire()
             break
         mutex.acquire()
     time.sleep(0.002)
