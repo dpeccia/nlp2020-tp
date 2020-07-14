@@ -10,6 +10,8 @@ Además de detectar el plagio, se indica claramente, en qué líneas o palabras 
 
 Código realizado en Python3. Documento que acompaña al código: [TP Plagio - Diego Peccia.pdf](/TP%20Plagio%20-%20Diego%20Peccia.pdf)
 
+Video del algoritmo funcionando [acá](https://drive.google.com/file/d/1-1UNlB-egbrgAvQCuFdceIJaF6b-B__-/view?usp=sharing)
+
 ## Como ejecutarlo
 
 Para ejecutar el programa debemos tener previamente instalado Python3. Yo opté por usar un ambiente de Miniconda:
