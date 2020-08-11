@@ -12,6 +12,10 @@ Código realizado en Python3. Documento que acompaña al código: [TP Plagio - D
 
 Video del algoritmo funcionando [acá](https://drive.google.com/file/d/1-1UNlB-egbrgAvQCuFdceIJaF6b-B__-/view?usp=sharing)
 
+## Componentes generales
+
+![](/componentes.PNG)
+
 ## Como ejecutarlo
 
 Para ejecutar el programa debemos tener previamente instalado Python3. Yo opté por usar un ambiente de Miniconda:
